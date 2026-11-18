@@ -1,0 +1,134 @@
+// Aplika data model. Source of truth: docs/rules-and-flows.md (business rules are referenced as "Rule N").
+// Picture and explanation: docs/data-model.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  // One local file: backend/prisma/aplika.db (ignored by git).
+  url      = "file:./aplika.db"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+// Rule 4: status can only be one of these.
+enum ApplicationStatus {
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum EmailType {
+  VERIFY_EMAIL
+  REMINDER
+  REMINDER_DIGEST
+}
+
+enum EmailStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+// A job seeker or the admin.
+model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  passwordHash    String
+  role            Role      @default(USER)
+  emailVerifiedAt DateTime? // Rule 1: must be set before adding applications.
+  plan            Plan      @default(FREE) // Rule 5: FREE allows 25 active applications.
+  proActivatedAt  DateTime? // Rule 12: set by the admin after payment.
+  proEndsAt       DateTime? // Rule 13: when Pro ends, data stays.
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  applications       Application[]
+  verificationTokens VerificationToken[]
+  emailJobs          EmailJob[]
+}
+
+// One link sent by email to verify an address (Flow 1).
+model VerificationToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// One job application. Rule 2: belongs to exactly one user.
+model Application {
+  id             Int               @id @default(autoincrement())
+  userId         Int
+  company        String // Rule 3: required
+  jobTitle       String // Rule 3: required
+  appliedOn      DateTime // Rule 3: required, not in the future (checked in code)
+  link           String?
+  notes          String?
+  status         ApplicationStatus @default(APPLIED)
+  followUpOn     DateTime? // Rule 6: default appliedOn + 7 days; cleared on Offer/Rejected/Withdrawn (Rule 7)
+  lastFollowUpAt DateTime? // Flow 3 step 5: "mark followed up"
+  deletedAt      DateTime? // Rule 9: soft delete, restorable for 30 days
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  statusChanges StatusChange[]
+  emailJobs     EmailJob[]
+
+  // Rule 11 (duplicates) is a warning the user can override, so it is not a unique constraint; this index makes the check fast.
+  @@index([userId, company, jobTitle, appliedOn])
+  @@index([userId, status])
+  @@index([followUpOn])
+}
+
+// History of every move between stages (Flow 2 step 4).
+model StatusChange {
+  id            Int                @id @default(autoincrement())
+  applicationId Int
+  fromStatus    ApplicationStatus? // null for the first "Applied" entry
+  toStatus      ApplicationStatus
+  changedAt     DateTime           @default(now())
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+// The email queue (Flow 1 and Flow 3). Rule 10: up to 3 retries, then FAILED.
+model EmailJob {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  applicationId Int? // set for a single reminder; null for verification and digests
+  type          EmailType
+  status        EmailStatus @default(QUEUED)
+  attempts      Int         @default(0)
+  lastError     String?
+  scheduledFor  DateTime    @default(now())
+  sentAt        DateTime?
+  createdAt     DateTime    @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+
+  @@index([status, scheduledFor])
+  @@index([userId, scheduledFor]) // Rule 8: count reminders per user per day
+}

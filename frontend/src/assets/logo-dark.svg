@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" width="360" height="100" role="img" aria-label="Aplika logo">
+  <rect width="360" height="100" fill="#0F2A43"/>
+  <rect x="20" y="20" width="60" height="60" rx="14" fill="#F7F9FB"/>
+  <path d="M38 51 L47 60 L63 40" fill="none" stroke="#0F2A43" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="66" cy="34" r="5" fill="#F59E0B"/>
+  <text x="96" y="63" font-family="'Plus Jakarta Sans','Inter',Arial,sans-serif" font-size="40" font-weight="700" fill="#F7F9FB">aplika</text>
+</svg>

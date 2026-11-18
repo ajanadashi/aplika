@@ -1,0 +1,23 @@
+{
+  "name": "aplika",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aplika: every application, one place.",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "db:migrate": "npm run db:migrate -w backend",
+    "dev": "concurrently -n backend,frontend -c teal,yellow \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

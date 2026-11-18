@@ -1,0 +1,167 @@
+/* Brand tokens from docs/brand-book.md */
+:root {
+  --ink: #0f2a43;
+  --teal: #14b8a6;
+  --amber: #f59e0b;
+  --bg: #f7f9fb;
+  --muted: #4a5d70;
+  --line: #dde4eb;
+  --font-head: 'Plus Jakarta Sans', 'Inter', Arial, sans-serif;
+  --font-body: 'Inter', Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.55;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.top .logo {
+  display: block;
+  height: 50px;
+  width: auto;
+}
+
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  padding: 48px 0;
+}
+
+h1 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+}
+
+.pitch {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 34em;
+  margin: 0 0 28px;
+}
+
+.soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  margin: 0 0 28px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.langs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 12px 32px rgba(15, 42, 67, 0.08);
+}
+
+.column h2 {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+.card span {
+  color: var(--muted);
+}
+
+.card em {
+  font-style: normal;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+/* Amber only for things that need attention; teal for done. */
+.card em.due {
+  color: var(--ink);
+  font-weight: 500;
+  border-left: 3px solid var(--amber);
+  padding-left: 6px;
+}
+
+.card em.done {
+  color: #0d7f73;
+  font-weight: 500;
+}
+
+.foot {
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+@media (max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 32px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+}

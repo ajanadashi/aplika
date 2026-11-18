@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# SQLite database (local only, never committed)
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Builds and logs
+dist/
+*.log
+.DS_Store
